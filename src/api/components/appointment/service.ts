@@ -4,12 +4,13 @@
 
 import {promises as fs} from 'fs';
 import path from 'path';
+import { context } from '../../../index';
 
 // import types
 import { IAppointment } from './model';
 
 const readFileAsync = (): Promise<string> => {
-  const p = path.join(path.dirname(require.main.filename), 'api', 'data', 'appointments.json');
+  const p = path.join(context.appRoot, 'api', 'data', 'appointments.json');
   try {
     const fileContent = fs.readFile(p, 'utf-8');
     return fileContent;
@@ -19,7 +20,7 @@ const readFileAsync = (): Promise<string> => {
 };
 
 export const writeFileAsync = (callback: any): void => {
-  const p = path.join(path.dirname(require.main.filename), 'api', 'data', 'appointments.json');
+  const p = path.join(context.appRoot, 'api', 'data', 'appointments.json');
   try {
     fs.writeFile(p, callback);
   } catch(err) {

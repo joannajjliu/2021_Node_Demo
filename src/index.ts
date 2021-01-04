@@ -1,10 +1,19 @@
 // This is the startup file of our application.
 // It starts the express server and initializes connections to the database.
+import path from 'path';
 import express from 'express';
 
 import { appointmentRouter } from './api/server';
 
 const app = express();
+
+interface IContext {
+  appRoot: string;
+}
+
+const context: IContext = {
+  appRoot: path.resolve(__dirname) //set global variable for appRoot
+};
 
 // NOTE on methods
 // order matters:
@@ -30,4 +39,5 @@ app.listen(port, () => {
   console.log("app err", err);
 });
 
+export { context };
 export default app;

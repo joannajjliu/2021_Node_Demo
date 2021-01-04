@@ -1,8 +1,1 @@
-[{
-  "appointmentId": "abc123",
-  "doctorId": "def456",
-  "doctorName": "Joe Smith",
-  "patientName": "Michael Jordan",
-  "startTime": "2020-11-05T10:00:00Z",
-  "endTime": "2020-11-05T11:00:00Z"
-}]
+[{"appointmentId":"abc123","doctorId":"123","doctorName":null,"patientName":"Replaced by Jennifer Smith","startTime":"2020-11-05T10:00:00Z\"","endTime":"2020-11-05T11:00:00Z\""}]

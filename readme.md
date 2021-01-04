@@ -1,6 +1,8 @@
 # [Commit Stages](https://github.com/joannajjliu/2021_Node_Demo/commits/main)
 
 **The goal of each commit is summarized in the titles of the commits below.** *Detailed instructions on the actions taken to achieve each commit is further provided in numbered bullets under each commit.*
+**Disclaimer:** The following instructions and repo code, is only one way to obtain the desired results. Since technology is always evolving, and as there are limitless ways to code a single "Hello World", likewise there are different as well as probably better ways to come to the final results as indicated in the [API contract](./references/API-Contracts%20-%20Overview.pdf), and commit titles:
+**Please leave a comment**, or PR, for any part of the code/instructions which you believe can be done differently/ better.
 ## [Commit 1](https://github.com/joannajjliu/2021_Node_Demo/commit/192fc37e9ca5900aad634edf69670704144151c1) - Express generator
 
 1. [Reference 1.1](https://expressjs.com/en/starter/generator.html)
@@ -76,3 +78,37 @@
             - POST returns 201 Create with created appointment json response
             - PUT returns 204 No Content when AppointmentID exists, else it will return 201 Create with created appointment json
         - **/appointment/routes.ts** calls the appropriate controller code from /appointment/controllers.ts, and links it to a relavant route, using .get, .post, .put, or .delete methods of express.Router(). express.Router() is then exported, for use in the root /src/index.ts file
+
+## Commit 5 - Create Supertests for Appointment API
+
+1. Our tests will use [Mocha](https://mochajs.org/#getting-started) as the test framework, and [Supertest](https://www.npmjs.com/package/supertest) to test HTTP calls. NOTE that supertest does not mock the data. Either we mock it ourselves, or supertest will modify the actual data in our data store. For now, we will keep supertest calling the same json file as the acutal Appointment service. In Commit 7 (Fine-tuning), we will create a separate json file specifically for testing Appointment, and split the routes used for testing, vs development: `npm i -D mocha supertest @types/supertest @types/mocha`
+2. In package.json, add a test script: `"test": "mocha --watch"`
+3. In the root directory, create a .mocharc.json file. Copy the contents of .mocharc.json file in this repo into your locally created .mocharc.json file:
+    - **Install** `npm i ts-node`. You'll need this library for tests, as structured in this repo: to watch for changes in typescript files directly, without needing to first compile to javascript.
+    - Notice the `--watch` flag in the test script as well as the `"watch": true` in the .mocharc.json file. Both watch are required, in order to watch both changes in test (.spec.ts) files, as well as changes in typescript files.
+    - Notice the `"spec": "**/*.spec.ts"` property in .mocharc.json. This registers any files with extension `.spec.ts` as test files, and will be run by Mocha.
+4. In /src/api/components/appointment directory, create a test file, `appointment.spec.ts`. If you aren't familiar with supertest, follow the documentation for [Supertest](https://www.npmjs.com/package/supertest) to create tests for GET, POST, PUT, and DELETE appointment:
+    - In /src/api/components/appointment/service.ts from commit 4, the path p in readFileAsync and writeFileAsync functions, uses a root directory of `path.dirname(require.main.filename)`. Unfortunately, this path links to whichever root directory a script is being run from.
+    In the case of mocha (i.e. during `npm run test`), its root directory is `/node_modules/mocha/bin`. However, we want to keep the root directory as `/src` for our API tests calls. Therefore, we declare a global context variable, with appRoot property, in the src/index.ts file. We then import the context into the Appointment service.ts file, to access the global appRoot value.
+
+    ```javascript
+    // src/index.ts
+    const context = {
+        appRoot: path.resolve(__dirname) //set global variable for appRoot
+    };
+
+    export { context };
+    ...
+
+    // src/api/components/appointment/service.ts
+    import { context } from '../../../index';
+
+    const readFileAsync = () => {
+        const p = path.join(context.appRoot, ...);
+        ...
+    }
+    ```
+
+    - OPTIONAL: install the async library, to test multiple requests in a single `it` block. In the repo code, this was used to test multiple DELETE requests in one block: `npm i async` and `npm i -D @types/async`
+
+5. Run `npm run test` and watch the terminal, ensuring all tests are running as expected.
