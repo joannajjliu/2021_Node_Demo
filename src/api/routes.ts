@@ -1,0 +1,1 @@
+// The routes file is used to define and register all global routes.

@@ -1,3 +1,6 @@
+// This is the startup file of our application. 
+// It starts the express server and initializes connections to the database.;
+
 import express from 'express';
 
 const app = express();
