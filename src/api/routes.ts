@@ -2,8 +2,10 @@
 
 // import all in api
 // export all routes > import into server.ts
-import { appointmentRouter } from './components';
+import { appointmentRouter, availabilityRouter, userRouter } from './components';
 
 export {
-  appointmentRouter
+  appointmentRouter,
+  availabilityRouter,
+  userRouter
 }

@@ -77,11 +77,11 @@
             - DELETE returns 204 No Content response
             - POST returns 201 Create with created appointment json response
             - PUT returns 204 No Content when AppointmentID exists, else it will return 201 Create with created appointment json
-        - **/appointment/routes.ts** calls the appropriate controller code from /appointment/controllers.ts, and links it to a relavant route, using .get, .post, .put, or .delete methods of express.Router(). express.Router() is then exported, for use in the root /src/index.ts file
+        - **/appointment/routes.ts** calls the appropriate controller code from /appointment/controllers.ts, and links it to a relevant route, using .get, .post, .put, or .delete methods of express.Router(). express.Router() is then exported, for use in the root /src/index.ts file
 
 ## Commit 5 - Create Supertests for Appointment API
 
-1. Our tests will use [Mocha](https://mochajs.org/#getting-started) as the test framework, and [Supertest](https://www.npmjs.com/package/supertest) to test HTTP calls. NOTE that supertest does not mock the data. Either we mock it ourselves, or supertest will modify the actual data in our data store. For now, we will keep supertest calling the same json file as the acutal Appointment service. In Commit 7 (Fine-tuning), we will create a separate json file specifically for testing Appointment, and split the routes used for testing, vs development: `npm i -D mocha supertest @types/supertest @types/mocha`
+1. Our tests will use [Mocha](https://mochajs.org/#getting-started) as the test framework, and [Supertest](https://www.npmjs.com/package/supertest) to test HTTP calls. NOTE that supertest does not mock the data. Either we mock it ourselves, or supertest will modify the actual data in our data store. For now, we will keep supertest calling the same json file as the actual Appointment service. In Commit 7 (Fine-tuning), we will create a separate json file specifically for testing Appointment, and split the routes used for testing, vs development: `npm i -D mocha supertest @types/supertest @types/mocha`
 2. In package.json, add a test script: `"test": "mocha --watch"`
 3. In the root directory, create a .mocharc.json file. Copy the contents of .mocharc.json file in this repo into your locally created .mocharc.json file:
     - **Install** `npm i ts-node`. You'll need this library for tests, as structured in this repo: to watch for changes in typescript files directly, without needing to first compile to javascript.
@@ -112,3 +112,19 @@
     - OPTIONAL: install the async library, to test multiple requests in a single `it` block. In the repo code, this was used to test multiple DELETE requests in one block: `npm i async` and `npm i -D @types/async`
 
 5. Run `npm run test` and watch the terminal, ensuring all tests are running as expected.
+
+## Commit 6 - Complete code and tests for availability and user APIs
+
+1. Following a similar structure as what was done in Commits 5 and 6, we will now complete the code and tests for availability and user services. Some things to note:
+
+    - Use the [API Contract](./references/API-Contracts%20-%20Overview.pdf) to create the correct services for availability and user APIs:
+        - For the code in this repo, /api/doctors and /api/availabilities was merged into a single /api/availabilities endpoint.
+        - /api/availabilities endpoint has only GET and PUT methods:
+
+            - GET returns a status 200 with the requested response body in json format
+            - PUT returns a status 204 No Content, when the doctorId already exists (i.e. modification only). PUT returns a status 201 Created, when the doctorId does not exist, and therefore, a new availabilities object is created.
+            - After completing the services for availabilities, we can import the fetchAllAvailabilities() function into the appointment/service.ts file. Using the newly fetched availabilities, we can link doctorID to doctorName in the appointment POST and PUT services, and save the modified appointment object (i.e. no longer null doctorName) back to the appointments.json file.
+
+        - /api/users endpoints has only a POST method:
+
+            - POST returns a 201 Created status, and returns the submitted user object, in json format. When the userName or email already exists, POST returns a 409 Conflict status.

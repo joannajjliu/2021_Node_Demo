@@ -4,8 +4,10 @@
 // import everything in /api here 
 // export everything
 
-import { appointmentRouter } from './routes';
+import { appointmentRouter, availabilityRouter, userRouter } from './routes';
 
 export {
-  appointmentRouter
+  appointmentRouter,
+  availabilityRouter,
+  userRouter
 };

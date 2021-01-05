@@ -1,6 +1,6 @@
 // service class is a wrapper for any data store or external dependency.;
 // The service would invoke a connector;
-// such as a rest - client or db - client to retrieve relavent data.;
+// such as a rest - client or db - client to retrieve relevant data.;
 
 import {promises as fs} from 'fs';
 import path from 'path';
@@ -8,6 +8,10 @@ import { context } from '../../../index';
 
 // import types
 import { IAppointment } from './model';
+import { IAvailabilities, IAvailability } from '../availability/model';
+
+// import Availability service
+import { fetchAllAvailabilities } from '../availability/service';
 
 const readFileAsync = (): Promise<string> => {
   const p = path.join(context.appRoot, 'api', 'data', 'appointments.json');
@@ -28,8 +32,27 @@ export const writeFileAsync = (callback: any): void => {
   }
 };
 
+const updateDoctorName = async (appointment: IAppointment): Promise<IAppointment> => {
+  const appointmentCopy = { ...appointment }; // create shallow copy of appointment for use in function
+  
+  const availabilities: IAvailabilities = await fetchAllAvailabilities();
+  const doctorId = appointmentCopy.doctorId;
+  let doctorName = null;
+
+  for (let i = 0; i < availabilities.availabilities.length; i++) {
+    const availability: IAvailability = availabilities.availabilities[i];
+    if (availability.doctorId === doctorId) {
+      doctorName = availability.doctorName;
+      break;
+    }
+  }
+
+  appointmentCopy.doctorName = doctorName; // modify doctorName attribute in appointment
+  return appointmentCopy;
+};
+
 const saveAppointment = async (appointment: IAppointment): Promise<IAppointment> => {
-  const appointmentCopy: IAppointment = {...appointment}; //shallow copy of appointment
+  const appointmentCopy: IAppointment = await updateDoctorName(appointment);
 
   return readFileAsync().then((fileContent) => {
     let appointments = [];
@@ -42,26 +65,26 @@ const saveAppointment = async (appointment: IAppointment): Promise<IAppointment>
 };
 
 const updateAppointment = async (appointment: IAppointment) => {
-  const appointmentCopy: IAppointment = { ...appointment };
+  const appointmentCopy: IAppointment = await updateDoctorName(appointment);
   let resStatus: number = 500; // status 500 generic Internal Server Error
 
   return readFileAsync().then(fileContent => {
-    let appointments = [];
+    const appointments = JSON.parse(fileContent) || [];
 
-    appointments = JSON.parse(fileContent);
+    const appointmentsOriginalLen = appointments.length;
 
     const appointmentId = appointmentCopy.appointmentId;
 
-    if (appointments.length === 0) {//first entry
+    if (appointmentsOriginalLen === 0) {//first entry
       resStatus = 201;  // 201 CREATE response status when appointment does not exist
       appointments.push(appointmentCopy);
     } else {
-      for (let i = 0; i < appointments.length; i++) {
+      for (let i = 0; i < appointmentsOriginalLen; i++) {
         if (appointments[i].appointmentId === appointmentId) {
           resStatus = 204; // 204 No Content, item successfully updated
           appointments.splice(i, 1, appointmentCopy);
           break;
-        } else if (i === appointments.length - 1) {
+        } else if (i === appointmentsOriginalLen - 1) {
           resStatus = 201;  // 201 CREATE response status when appointment does not exist
           appointments.push(appointmentCopy);
           break;
@@ -79,11 +102,11 @@ const updateAppointment = async (appointment: IAppointment) => {
 
 const deleteAppointment = (appointmentId: string) => {
   readFileAsync().then((fileContent) => {
-    let appointments = [];
+    const appointments = JSON.parse(fileContent) || [];
 
-    appointments = JSON.parse(fileContent);
+    const appointmentsOriginalLen = appointments.length;
 
-    for (let i = 0; i < appointments.length; i++) {
+    for (let i = 0; i < appointmentsOriginalLen; i++) {
       if (appointments[i].appointmentId === appointmentId) {
         appointments.splice(i, 1);
         console.log(`appointment ${appointmentId} successfully deleted`);

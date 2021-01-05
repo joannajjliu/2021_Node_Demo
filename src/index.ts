@@ -3,7 +3,7 @@
 import path from 'path';
 import express from 'express';
 
-import { appointmentRouter } from './api/server';
+import { appointmentRouter, availabilityRouter, userRouter } from './api/server';
 
 const app = express();
 
@@ -28,6 +28,8 @@ const port = 4000; // arbitrary PORT selected
 
 // '/api' path filter, for all routes
 app.use('/api', appointmentRouter);
+app.use('/api', availabilityRouter);
+app.use('/api', userRouter);
 
 app.listen(port, () => {
   try {
