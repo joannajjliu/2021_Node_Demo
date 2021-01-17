@@ -14,7 +14,7 @@ import { IAvailabilities, IAvailability } from '../availability/model';
 import { fetchAllAvailabilities } from '../availability/service';
 
 const readFileAsync = (): Promise<string> => {
-  const p = path.join(context.appRoot, 'api', 'data', 'appointments.json');
+  const p = path.join(context.appRoot, process.env.DATA_FOLDER, 'data', 'appointments.json');
   try {
     const fileContent = fs.readFile(p, 'utf-8');
     return fileContent;
@@ -24,7 +24,7 @@ const readFileAsync = (): Promise<string> => {
 };
 
 export const writeFileAsync = (callback: any): void => {
-  const p = path.join(context.appRoot, 'api', 'data', 'appointments.json');
+  const p = path.join(context.appRoot, process.env.DATA_FOLDER, 'data', 'appointments.json');
   try {
     fs.writeFile(p, callback);
   } catch(err) {

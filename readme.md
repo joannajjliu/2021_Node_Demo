@@ -128,3 +128,8 @@
         - /api/users endpoints has only a POST method:
 
             - POST returns a 201 Created status, and returns the submitted user object, in json format. When the userName or email already exists, POST returns a 409 Conflict status.
+
+## Commit 7 - Split test and dev environments
+
+1. There are several ways to specify different environment variables. The approach we'll go with is in package.json, we add `SET ENV_VAR` into the scripts. For the current code, we only need `SET PORT` and `SET DATA_FOLDER` to split dev vs test environments, and folders in which to house the json data files.
+    - In service.ts files, change `api` in path.join to `process.env.DATA_FOLDER`

@@ -10,7 +10,7 @@ import { context } from '../../../index';
 import { IAvailability, IAvailabilities } from './model';
 
 const readFileAsync = (): Promise<string> => {
-  const p = path.join(context.appRoot, 'api', 'data', 'availabilities.json');
+  const p = path.join(context.appRoot, process.env.DATA_FOLDER, 'data', 'availabilities.json');
   
   try {
     const fileContent = fs.readFile(p, 'utf-8');
@@ -21,7 +21,7 @@ const readFileAsync = (): Promise<string> => {
 };
 
 export const writeFileAsync = (callback: any): void => {
-  const p = path.join(context.appRoot,'api', 'data', 'availabilities.json');
+  const p = path.join(context.appRoot, process.env.DATA_FOLDER, 'data', 'availabilities.json');
   try {
     fs.writeFile(p, callback);
   } catch(err) {

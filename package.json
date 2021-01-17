@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "license": "ISC",
   "scripts": {
-    "start": "tsc && concurrently \"tsc -w\" \"nodemon dist/index.js\"",
-    "test": "mocha --watch"
+    "start": "SET NODE_ENV=development&& SET PORT=4000&& SET DATA_FOLDER=api&& tsc && concurrently \"tsc -w\" \"nodemon dist/index.js\"",
+    "test": "SET NODE_ENV=test&& SET PORT=4002&& SET DATA_FOLDER=test&& mocha --watch"
   },
   "dependencies": {
     "async": "^3.2.0",

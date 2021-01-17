@@ -24,7 +24,7 @@ const context: IContext = {
 
 app.use(express.json());
 
-const port = 4000; // arbitrary PORT selected
+const port = process.env.PORT;
 
 // '/api' path filter, for all routes
 app.use('/api', appointmentRouter);
